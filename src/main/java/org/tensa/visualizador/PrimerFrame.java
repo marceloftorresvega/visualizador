@@ -104,6 +104,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jRadioButton5 = new javax.swing.JRadioButton();
         jRadioButton6 = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanelXz = new javax.swing.JPanel();
         jPanelYz = new javax.swing.JPanel();
@@ -203,6 +204,13 @@ public class PrimerFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Limpiar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -215,6 +223,8 @@ public class PrimerFrame extends javax.swing.JFrame {
                         .addComponent(jButtonInicia, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton2)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -262,7 +272,8 @@ public class PrimerFrame extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonInicia)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addContainerGap())
         );
 
@@ -897,6 +908,12 @@ public class PrimerFrame extends javax.swing.JFrame {
                  
     }//GEN-LAST:event_jFileChooser1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        modelos.clear();
+        camara1PolygonList.clear();
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     private javax.swing.filechooser.FileFilter getFileFilter(){
         javax.swing.filechooser.FileNameExtensionFilter ff = new FileNameExtensionFilter("Archivos STL, WaveFront", "stl","obj");
         return ff;
@@ -1003,6 +1020,7 @@ public class PrimerFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonInicia;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JFrame jFrame1;
