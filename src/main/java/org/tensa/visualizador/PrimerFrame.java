@@ -36,7 +36,7 @@ import org.tensa.tensada.vector.impl.DoubleVector3DImpl;
  */
 public class PrimerFrame extends javax.swing.JFrame {
 
-    private EsferaGeodecica esfera;
+    private EsferaGeodecica gizmo;
     private Camara camara;
     private Atril camaraAtril;
     private Atril esferaAtril;
@@ -419,9 +419,9 @@ public class PrimerFrame extends javax.swing.JFrame {
 
     private void initModels(){
 
-        esfera = new EsferaGeodecica(2, 50);
+        gizmo = new EsferaGeodecica(2, 50);
         esferaAtril = new Atril();
-        esferaAtril.setNube(esfera);
+        esferaAtril.setNube(gizmo);
         esferaAtril.setLugar(new DoubleVector3DImpl(0, 0, 0));
         esferaAtril.setTalla(new DoubleVector3DImpl(1, 1, 1));
 
@@ -500,7 +500,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         this.cachedAngle = angle;
         this.cachedEje = eje;
 
-        Double3DVector[] esferaPoints;
+        Double3DVector[] gizmoPoints;
 
         DoubleVector3DImpl offset = new DoubleVector3DImpl(60, 60, 60);
 
@@ -510,7 +510,7 @@ public class PrimerFrame extends javax.swing.JFrame {
 
         DoubleMatriz mfc = cr.producto(eje.toMatriz().matrizRotacion(-angle));//mf.producto(cr);
 
-        esferaPoints =  esfera.getPointList()
+        gizmoPoints =  gizmo.getPointList()
                 .stream()
                 .map(Double3DVector::toMatriz)
                 .map(mf::producto)
@@ -521,9 +521,9 @@ public class PrimerFrame extends javax.swing.JFrame {
 
         // vistas planas esfera de referencia 
         
-        esfera.getLineIndexList().forEach( indice -> {
-            Double3DVector iniPoint = esferaPoints[indice.getFila()-1];
-            Double3DVector endPoint = esferaPoints[indice.getColumna()-1];
+        gizmo.getLineIndexList().forEach( indice -> {
+            Double3DVector iniPoint = gizmoPoints[indice.getFila()-1];
+            Double3DVector endPoint = gizmoPoints[indice.getColumna()-1];
 
             jPanelXy.getGraphics()
                     .drawLine(
@@ -606,7 +606,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             IndexadoTriangular indizado = (IndexadoTriangular) modelo.getNube();
 
             //vistas planas
-            indizado.getLineIndexList().forEach( indice -> {
+            indizado.getLineIndexList().parallelStream().forEach( indice -> {
                 
                 Double3DVector puntoInicio = modeloPoints[indice.getFila() - 1].add(offset);
                 Double3DVector puntoFinal = modeloPoints[indice.getColumna() -1 ].add(offset);
@@ -689,8 +689,10 @@ public class PrimerFrame extends javax.swing.JFrame {
                     });
         });
         camara1PolygonList.sort((p1, p2) -> Double.compare(p2.distance, p1.distance));
-        jPanelCamera.repaint();
-        jPanelCamera1.repaint();
+        java.awt.EventQueue.invokeLater(() ->{
+            jPanelCamera.repaint();
+            jPanelCamera1.repaint();
+        });
 
     }
 
@@ -911,6 +913,10 @@ public class PrimerFrame extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         modelos.clear();
         camara1PolygonList.clear();
+        java.awt.EventQueue.invokeLater(() ->{
+            jPanelCamera.repaint();
+            jPanelCamera1.repaint();
+        });
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
