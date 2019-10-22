@@ -100,7 +100,7 @@ public class ViewJPanel extends javax.swing.JPanel {
         });
 
         buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText("plano");
+        jRadioButton1.setLabel("ortonormal");
         jRadioButton1.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jRadioButton1ItemStateChanged(evt);
@@ -127,7 +127,7 @@ public class ViewJPanel extends javax.swing.JPanel {
                 .addComponent(jRadioButton2)
                 .addGap(18, 18, 18)
                 .addComponent(jRadioButton3)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
