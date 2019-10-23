@@ -36,7 +36,7 @@ import org.tensa.tensada.vector.impl.DoubleVector3DImpl;
  */
 public class PrimerFrame extends javax.swing.JFrame {
 
-    private EsferaGeodecica esfera;
+    private EsferaGeodecica gizmo;
     private Camara camara;
     private Atril camaraAtril;
     private Atril esferaAtril;
@@ -104,6 +104,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jRadioButton5 = new javax.swing.JRadioButton();
         jRadioButton6 = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanelXz = new javax.swing.JPanel();
         jPanelYz = new javax.swing.JPanel();
@@ -203,6 +204,13 @@ public class PrimerFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Limpiar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -215,6 +223,8 @@ public class PrimerFrame extends javax.swing.JFrame {
                         .addComponent(jButtonInicia, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton2)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -262,7 +272,8 @@ public class PrimerFrame extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonInicia)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addContainerGap())
         );
 
@@ -408,9 +419,9 @@ public class PrimerFrame extends javax.swing.JFrame {
 
     private void initModels(){
 
-        esfera = new EsferaGeodecica(2, 50);
+        gizmo = new EsferaGeodecica(2, 50);
         esferaAtril = new Atril();
-        esferaAtril.setNube(esfera);
+        esferaAtril.setNube(gizmo);
         esferaAtril.setLugar(new DoubleVector3DImpl(0, 0, 0));
         esferaAtril.setTalla(new DoubleVector3DImpl(1, 1, 1));
 
@@ -489,7 +500,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         this.cachedAngle = angle;
         this.cachedEje = eje;
 
-        Double3DVector[] esferaPoints;
+        Double3DVector[] gizmoPoints;
 
         DoubleVector3DImpl offset = new DoubleVector3DImpl(60, 60, 60);
 
@@ -499,7 +510,7 @@ public class PrimerFrame extends javax.swing.JFrame {
 
         DoubleMatriz mfc = cr.producto(eje.toMatriz().matrizRotacion(-angle));//mf.producto(cr);
 
-        esferaPoints =  esfera.getPointList()
+        gizmoPoints =  gizmo.getPointList()
                 .stream()
                 .map(Double3DVector::toMatriz)
                 .map(mf::producto)
@@ -510,9 +521,9 @@ public class PrimerFrame extends javax.swing.JFrame {
 
         // vistas planas esfera de referencia 
         
-        esfera.getLineIndexList().forEach( indice -> {
-            Double3DVector iniPoint = esferaPoints[indice.getFila()-1];
-            Double3DVector endPoint = esferaPoints[indice.getColumna()-1];
+        gizmo.getLineIndexList().forEach( indice -> {
+            Double3DVector iniPoint = gizmoPoints[indice.getFila()-1];
+            Double3DVector endPoint = gizmoPoints[indice.getColumna()-1];
 
             jPanelXy.getGraphics()
                     .drawLine(
@@ -595,7 +606,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             IndexadoTriangular indizado = (IndexadoTriangular) modelo.getNube();
 
             //vistas planas
-            indizado.getLineIndexList().forEach( indice -> {
+            indizado.getLineIndexList().parallelStream().forEach( indice -> {
                 
                 Double3DVector puntoInicio = modeloPoints[indice.getFila() - 1].add(offset);
                 Double3DVector puntoFinal = modeloPoints[indice.getColumna() -1 ].add(offset);
@@ -678,8 +689,10 @@ public class PrimerFrame extends javax.swing.JFrame {
                     });
         });
         camara1PolygonList.sort((p1, p2) -> Double.compare(p2.distance, p1.distance));
-        jPanelCamera.repaint();
-        jPanelCamera1.repaint();
+        java.awt.EventQueue.invokeLater(() ->{
+            jPanelCamera.repaint();
+            jPanelCamera1.repaint();
+        });
 
     }
 
@@ -897,6 +910,16 @@ public class PrimerFrame extends javax.swing.JFrame {
                  
     }//GEN-LAST:event_jFileChooser1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        modelos.clear();
+        camara1PolygonList.clear();
+        java.awt.EventQueue.invokeLater(() ->{
+            jPanelCamera.repaint();
+            jPanelCamera1.repaint();
+        });
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     private javax.swing.filechooser.FileFilter getFileFilter(){
         javax.swing.filechooser.FileNameExtensionFilter ff = new FileNameExtensionFilter("Archivos STL, WaveFront", "stl","obj");
         return ff;
@@ -1003,6 +1026,7 @@ public class PrimerFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonInicia;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JFrame jFrame1;
