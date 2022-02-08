@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.tensa.stlobjects.camara.Camara;
 import org.tensa.stlobjects.codec.ObjCodec;
@@ -242,12 +244,12 @@ public class PrimerFrame extends javax.swing.JFrame {
                                     .addComponent(jRadioButton1)
                                     .addComponent(jRadioButton2)))
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                        .addGap(100, 100, 100)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jRadioButton5)
                             .addComponent(jRadioButton4)
                             .addComponent(jRadioButton6))
-                        .addGap(86, 86, 86))))
+                        .addContainerGap(86, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -287,6 +289,12 @@ public class PrimerFrame extends javax.swing.JFrame {
                 jPanelXzMouseDraggedDisco(evt);
             }
         });
+        jPanelXz.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jPanelXzMouseReleasedRodillo(evt);
+                jPanelXzMouseReleasedDisco(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelXzLayout = new javax.swing.GroupLayout(jPanelXz);
         jPanelXz.setLayout(jPanelXzLayout);
@@ -305,6 +313,12 @@ public class PrimerFrame extends javax.swing.JFrame {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 jPanelYzMouseDraggedRodillo(evt);
                 jPanelYzMouseDraggedDisco(evt);
+            }
+        });
+        jPanelYz.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jPanelYzMouseReleasedRodillo(evt);
+                jPanelYzMouseReleasedDisco(evt);
             }
         });
 
@@ -345,6 +359,12 @@ public class PrimerFrame extends javax.swing.JFrame {
                 jPanelXyMouseDraggedDisco(evt);
             }
         });
+        jPanelXy.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jPanelXyMouseReleasedRodillo(evt);
+                jPanelXyMouseReleasedDisco(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelXyLayout = new javax.swing.GroupLayout(jPanelXy);
         jPanelXy.setLayout(jPanelXyLayout);
@@ -381,11 +401,11 @@ public class PrimerFrame extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanelXz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanelYz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addGap(46, 46, 46)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanelCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanelCamera1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -482,20 +502,15 @@ public class PrimerFrame extends javax.swing.JFrame {
     }
     
 
-    private void drawByAngle(DoubleVector3DImpl eje, double angle) {
+    private void drawByAngle(DoubleVector3DImpl eje, double angle, boolean isFull) {
 
-        jPanelXy.getGraphics().clearRect(5, 5, jPanelXy.getWidth() - 10, jPanelXy.getHeight() - 10);
-        jPanelXz.getGraphics().clearRect(5, 5, jPanelXz.getWidth() - 10, jPanelXz.getHeight() - 10);
-        jPanelYz.getGraphics().clearRect(5, 5, jPanelYz.getWidth() - 10, jPanelYz.getHeight() - 10);
-        jPanelXy.getGraphics().drawRect(10, 10, 100, 100);
-        jPanelXz.getGraphics().drawRect(10, 10, 100, 100);
-        jPanelYz.getGraphics().drawRect(10, 10, 100, 100);
-        jPanelXy.getGraphics().setColor(Color.BLACK);
-        jPanelXz.getGraphics().setColor(Color.BLACK);
-        jPanelYz.getGraphics().setColor(Color.BLACK);
-        jPanelXy.getGraphics().setPaintMode();
-        jPanelXz.getGraphics().setPaintMode();
-        jPanelYz.getGraphics().setPaintMode();
+        Stream.of(jPanelXy, jPanelXz, jPanelYz )
+                .forEach(p -> {
+                    p.getGraphics().clearRect(5, 5, p.getWidth() - 10, p.getHeight() - 10);
+                    p.getGraphics().drawRect(10, 10, 100, 100);
+                    p.getGraphics().setColor(Color.BLACK);
+                    p.getGraphics().setPaintMode();
+                });
 
         this.cachedAngle = angle;
         this.cachedEje = eje;
@@ -507,8 +522,6 @@ public class PrimerFrame extends javax.swing.JFrame {
         DoubleMatriz cr = camaraAtril.getEje().toMatriz().matrizRotacion(camaraAtril.getAngulo());
 
         DoubleMatriz mf = eje.toMatriz().matrizRotacion(angle);
-
-        DoubleMatriz mfc = cr.producto(eje.toMatriz().matrizRotacion(-angle));//mf.producto(cr);
 
         gizmoPoints =  gizmo.getPointList()
                 .stream()
@@ -580,119 +593,124 @@ public class PrimerFrame extends javax.swing.JFrame {
         });
 
 
-        DoubleMatriz pCamara = mf.producto(camaraAtril.getLugar().toMatriz());
-        DoubleMatriz matOffset = offset.toMatriz();
-        camara1PolygonList.clear();
+        if (isFull) {
 
-        modelos.forEach(modelo -> {
+            DoubleMatriz mfc = cr.producto(eje.toMatriz().matrizRotacion(-angle));//mf.producto(cr);
 
-            DoubleMatriz crm = modelo.getEje().toMatriz().matrizRotacion(modelo.getAngulo())
-                    .producto(new DoubleMatriz(new Dominio(3, 3))
-                        .indexa(1, 1, modelo.getTalla().getX())
-                        .indexa(2, 2, modelo.getTalla().getY())
-                        .indexa(3, 3, modelo.getTalla().getZ()));
-            
-            Double3DVector[] modeloPoints =  modelo.getNube()
-                    .getPointList()
-                    .stream()
-                    .map(point -> {
-                        return crm.producto(point.toMatriz()).toVector().add(modelo.getLugar());
-                    }).toArray(Double3DVector[]::new);
-            
-            HashMap<Integer, Double3DVector> cachePoints = new HashMap<>();
-            HashMap<Integer, Double> cacheDist = new HashMap<>();
-            
+            DoubleMatriz pCamara = mf.producto(camaraAtril.getLugar().toMatriz());
+            DoubleMatriz matOffset = offset.toMatriz();
+            camara1PolygonList.clear();
 
-            IndexadoTriangular indizado = (IndexadoTriangular) modelo.getNube();
+            modelos.forEach(modelo -> {
 
-            //vistas planas
-            indizado.getLineIndexList().parallelStream().forEach( indice -> {
-                
-                Double3DVector puntoInicio = modeloPoints[indice.getFila() - 1].add(offset);
-                Double3DVector puntoFinal = modeloPoints[indice.getColumna() -1 ].add(offset);
+                DoubleMatriz crm = modelo.getEje().toMatriz().matrizRotacion(modelo.getAngulo())
+                        .producto(new DoubleMatriz(new Dominio(3, 3))
+                            .indexa(1, 1, modelo.getTalla().getX())
+                            .indexa(2, 2, modelo.getTalla().getY())
+                            .indexa(3, 3, modelo.getTalla().getZ()));
 
-                jPanelXy.getGraphics()
-                        .drawLine(
-                                (int) puntoInicio.getX(), (int) puntoInicio.getY(),
-                                (int) puntoFinal.getX(), (int) puntoFinal.getY());
+                Double3DVector[] modeloPoints =  modelo.getNube()
+                        .getPointList()
+                        .stream()
+                        .map(point -> {
+                            return crm.producto(point.toMatriz()).toVector().add(modelo.getLugar());
+                        }).toArray(Double3DVector[]::new);
 
-                jPanelYz.getGraphics()
-                        .drawLine(
-                                (int) puntoInicio.getY(), (int) puntoInicio.getZ(),
-                                (int) puntoFinal.getY(), (int) puntoFinal.getZ());
+                HashMap<Integer, Double3DVector> cachePoints = new HashMap<>();
+                HashMap<Integer, Double> cacheDist = new HashMap<>();
 
-                jPanelXz.getGraphics()
-                        .drawLine(
-                                (int) puntoInicio.getZ(), (int) puntoInicio.getX(),
-                                (int) puntoFinal.getZ(), (int) puntoFinal.getX());
 
-            });
-            
-            //vistas camara
-            for(int indiceDirecto = 0; indiceDirecto < modeloPoints.length; indiceDirecto++){
-                
-                DoubleVector3DImpl puntoProcesado;
-                DoubleMatriz puntoPreProcesado = mfc.producto(modeloPoints[indiceDirecto].toMatriz().substraccion(pCamara));
-                
-                cacheDist.put(indiceDirecto, Math.sqrt(puntoPreProcesado.distanciaE2().get(Indice.E1)));
+                IndexadoTriangular indizado = (IndexadoTriangular) modelo.getNube();
 
-                switch (alejamiento) {
-                    case TO_PLANE:
+                //vistas planas
+                indizado.getLineIndexList().parallelStream().forEach( indice -> {
 
-                        // vector con distancia desde z
-                        puntoProcesado = ((DoubleMatriz) alejamiento(puntoPreProcesado, puntoPreProcesado.get(Indice.E3)).adicion(matOffset)).toVector();
+                    Double3DVector puntoInicio = modeloPoints[indice.getFila() - 1].add(offset);
+                    Double3DVector puntoFinal = modeloPoints[indice.getColumna() -1 ].add(offset);
 
-                        break;
-                    case TO_FOCUS:
+                    jPanelXy.getGraphics()
+                            .drawLine(
+                                    (int) puntoInicio.getX(), (int) puntoInicio.getY(),
+                                    (int) puntoFinal.getX(), (int) puntoFinal.getY());
 
-                        //distancia es matriz de valor unico
-                        puntoProcesado = ((DoubleMatriz) alejamiento(puntoPreProcesado, cacheDist.get(indiceDirecto)).adicion(matOffset)).toVector();
+                    jPanelYz.getGraphics()
+                            .drawLine(
+                                    (int) puntoInicio.getY(), (int) puntoInicio.getZ(),
+                                    (int) puntoFinal.getY(), (int) puntoFinal.getZ());
 
-                        break;
-                    default:
+                    jPanelXz.getGraphics()
+                            .drawLine(
+                                    (int) puntoInicio.getZ(), (int) puntoInicio.getX(),
+                                    (int) puntoFinal.getZ(), (int) puntoFinal.getX());
 
-                        puntoProcesado = ((DoubleMatriz) puntoPreProcesado.adicion(matOffset)).toVector();
+                });
 
-                        break;
+                //vistas camara
+                for(int indiceDirecto = 0; indiceDirecto < modeloPoints.length; indiceDirecto++){
+
+                    DoubleVector3DImpl puntoProcesado;
+                    DoubleMatriz puntoPreProcesado = mfc.producto(modeloPoints[indiceDirecto].toMatriz().substraccion(pCamara));
+
+                    cacheDist.put(indiceDirecto, Math.sqrt(puntoPreProcesado.distanciaE2().get(Indice.E1)));
+
+                    switch (alejamiento) {
+                        case TO_PLANE:
+
+                            // vector con distancia desde z
+                            puntoProcesado = ((DoubleMatriz) alejamiento(puntoPreProcesado, puntoPreProcesado.get(Indice.E3)).adicion(matOffset)).toVector();
+
+                            break;
+                        case TO_FOCUS:
+
+                            //distancia es matriz de valor unico
+                            puntoProcesado = ((DoubleMatriz) alejamiento(puntoPreProcesado, cacheDist.get(indiceDirecto)).adicion(matOffset)).toVector();
+
+                            break;
+                        default:
+
+                            puntoProcesado = ((DoubleMatriz) puntoPreProcesado.adicion(matOffset)).toVector();
+
+                            break;
+                    }
+                    cachePoints.put(indiceDirecto, puntoProcesado);
+
                 }
-                cachePoints.put(indiceDirecto, puntoProcesado);
 
-            }
-            
 
-            //vista de camara crea poligonos
-            indizado.getTriangleIndexList()
-                    .forEach(triangle -> {
+                //vista de camara crea poligonos
+                indizado.getTriangleIndexList()
+                        .forEach(triangle -> {
 
-                        SpacePolygon polygon = new SpacePolygon();
+                            SpacePolygon polygon = new SpacePolygon();
 
-                        triangle.stream()
-                        .forEach(idx -> {
-                            Double3DVector vector = cachePoints.get(idx);
+                            triangle.stream()
+                            .forEach(idx -> {
+                                Double3DVector vector = cachePoints.get(idx);
 
-                            double factor = cacheDist.get(idx);
-                            polygon.distance = polygon.distance + factor / 4;
+                                double factor = cacheDist.get(idx);
+                                polygon.distance = polygon.distance + factor / 4;
 
-                            Double color = Math.abs(vector.getZ()) / factor / 16;
+                                Double color = Math.abs(vector.getZ()) / factor / 16;
 
-                            float[] compArray = polygon.color.getRGBColorComponents(null);
-                            try{
-                                polygon.color = new Color(compArray[0] + color.floatValue(), compArray[1] + color.floatValue(), compArray[2] + color.floatValue());
-                            }catch( IllegalArgumentException ex){
-                                polygon.color = Color.WHITE;
-                            }
+                                float[] compArray = polygon.color.getRGBColorComponents(null);
+                                try{
+                                    polygon.color = new Color(compArray[0] + color.floatValue(), compArray[1] + color.floatValue(), compArray[2] + color.floatValue());
+                                }catch( IllegalArgumentException ex){
+                                    polygon.color = Color.WHITE;
+                                }
 
-                            polygon.addPoint((int) vector.getX(), (int) vector.getY());
+                                polygon.addPoint((int) vector.getX(), (int) vector.getY());
 
+                            });
+                            camara1PolygonList.add(polygon);
                         });
-                        camara1PolygonList.add(polygon);
-                    });
-        });
-        camara1PolygonList.sort((p1, p2) -> Double.compare(p2.distance, p1.distance));
-        java.awt.EventQueue.invokeLater(() ->{
-            jPanelCamera.repaint();
-            jPanelCamera1.repaint();
-        });
+            });
+            camara1PolygonList.sort((p1, p2) -> Double.compare(p2.distance, p1.distance));
+            java.awt.EventQueue.invokeLater(() ->{
+                jPanelCamera.repaint();
+                jPanelCamera1.repaint();
+            });
+        }
 
     }
 
@@ -714,7 +732,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getY()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI);
+        drawByAngle(p, distancia / 50 * Math.PI, false);
 
 
     }//GEN-LAST:event_jPanelXyMouseDraggedRodillo
@@ -733,7 +751,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getY()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI);
+        drawByAngle(p, distancia / 50 * Math.PI, false);
     }//GEN-LAST:event_jPanelYzMouseDraggedRodillo
 
     private void jPanelXzMouseDraggedRodillo(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXzMouseDraggedRodillo
@@ -750,7 +768,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getZ()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI);
+        drawByAngle(p, distancia / 50 * Math.PI, false);
     }//GEN-LAST:event_jPanelXzMouseDraggedRodillo
 
     private void jPanelCameraMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelCameraMouseDragged
@@ -762,7 +780,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         camaraAtril.setAngulo(distancia / 50 * Math.PI);
         camaraAtril.setEje(p);
         
-        drawByAngle(this.cachedEje, this.cachedAngle);
+        drawByAngle(this.cachedEje, this.cachedAngle, false);
     }//GEN-LAST:event_jPanelCameraMouseDragged
 
     private void jRadioButton2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jRadioButton2StateChanged
@@ -794,10 +812,10 @@ public class PrimerFrame extends javax.swing.JFrame {
 //        
         if (p1.getX() > 0) {
 
-            drawByAngle(p, Math.asin(p1.getY()));
+            drawByAngle(p, Math.asin(p1.getY()), false);
         } else {
 
-            drawByAngle(p, Math.PI - Math.asin(p1.getY()));
+            drawByAngle(p, Math.PI - Math.asin(p1.getY()), false);
         }
 
     }//GEN-LAST:event_jPanelXyMouseDraggedDisco
@@ -822,10 +840,10 @@ public class PrimerFrame extends javax.swing.JFrame {
 
         if (p1.getX() > 0) {
 
-            drawByAngle(p, Math.asin(p1.getY()));
+            drawByAngle(p, Math.asin(p1.getY()), false);
         } else {
 
-            drawByAngle(p, Math.PI - Math.asin(p1.getY()));
+            drawByAngle(p, Math.PI - Math.asin(p1.getY()), false);
         }
     }//GEN-LAST:event_jPanelYzMouseDraggedDisco
 
@@ -849,10 +867,10 @@ public class PrimerFrame extends javax.swing.JFrame {
 
         if (p1.getX() > 0) {
 
-            drawByAngle(p, Math.asin(p1.getY()));
+            drawByAngle(p, Math.asin(p1.getY()), false);
         } else {
 
-            drawByAngle(p, Math.PI - Math.asin(p1.getY()));
+            drawByAngle(p, Math.PI - Math.asin(p1.getY()), false);
         }
     }//GEN-LAST:event_jPanelXzMouseDraggedDisco
 
@@ -920,10 +938,142 @@ public class PrimerFrame extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jPanelYzMouseReleasedRodillo(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelYzMouseReleasedRodillo
+        if (!this.isRodillo) {
+            return;
+        }
+
+        DoubleVector3DImpl p = new DoubleVector3DImpl(0L, evt.getX() - 60, evt.getY() - 60);
+
+        Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
+        p = (DoubleVector3DImpl) p.escalar(1 / distancia);
+        jLabel1.setText(Double.toString(p.getZ()));
+        jLabel2.setText(Double.toString(p.getY()));
+        jLabel3.setText(distancia.toString());
+        
+        drawByAngle(p, distancia / 50 * Math.PI, true);
+    }//GEN-LAST:event_jPanelYzMouseReleasedRodillo
+
+    private void jPanelXyMouseReleasedRodillo(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXyMouseReleasedRodillo
+        if (!this.isRodillo) {
+            return;
+        }
+
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+
+        Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
+        p = (DoubleVector3DImpl) p.escalar(1 / distancia);
+        jLabel1.setText(Double.toString(p.getX()));
+        jLabel2.setText(Double.toString(p.getY()));
+        jLabel3.setText(distancia.toString());
+        
+        drawByAngle(p, distancia / 50 * Math.PI, true);
+
+    }//GEN-LAST:event_jPanelXyMouseReleasedRodillo
+
+    private void jPanelXzMouseReleasedRodillo(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXzMouseReleasedRodillo
+
+        if (!this.isRodillo) {
+            return;
+        }
+
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - 60, 0L, evt.getX() - 60);
+
+        Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
+        p = (DoubleVector3DImpl) p.escalar(1 / distancia);
+        jLabel1.setText(Double.toString(p.getX()));
+        jLabel2.setText(Double.toString(p.getZ()));
+        jLabel3.setText(distancia.toString());
+        
+        drawByAngle(p, distancia / 50 * Math.PI, true);
+    }//GEN-LAST:event_jPanelXzMouseReleasedRodillo
+
+    private void jPanelXyMouseReleasedDisco(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXyMouseReleasedDisco
+
+        if (this.isRodillo) {
+            return;
+        }
+
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(0, 0, 1);
+
+        Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
+        p1 = (DoubleVector3DImpl) p1.escalar(1 / distancia);
+//        
+        jLabel1.setText(Double.toString(p1.getX()));
+        jLabel2.setText(Double.toString(p1.getY()));
+
+        jLabel3.setText(Double.toString(Math.asin(p1.getY()) / Math.PI * 180));
+//        
+        if (p1.getX() > 0) {
+
+            drawByAngle(p, Math.asin(p1.getY()), true);
+        } else {
+
+            drawByAngle(p, Math.PI - Math.asin(p1.getY()), true);
+        }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPanelXyMouseReleasedDisco
+
+    private void jPanelYzMouseReleasedDisco(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelYzMouseReleasedDisco
+
+        if (this.isRodillo) {
+            return;
+        }
+
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(1, 0, 0);
+
+        Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
+        p1 = (DoubleVector3DImpl) p1.escalar(1 / distancia);
+//        
+        jLabel1.setText(Double.toString(p1.getX()));
+        jLabel2.setText(Double.toString(p1.getY()));
+
+        jLabel3.setText(Double.toString(Math.asin(p1.getY()) / Math.PI * 180));
+//        
+
+        if (p1.getX() > 0) {
+
+            drawByAngle(p, Math.asin(p1.getY()), true);
+        } else {
+
+            drawByAngle(p, Math.PI - Math.asin(p1.getY()), true);
+        }
+    }//GEN-LAST:event_jPanelYzMouseReleasedDisco
+
+    private void jPanelXzMouseReleasedDisco(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXzMouseReleasedDisco
+
+        if (this.isRodillo) {
+            return;
+        }
+
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(0, 1, 0);
+
+        Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
+        p1 = (DoubleVector3DImpl) p1.escalar(1 / distancia);
+//        
+        jLabel1.setText(Double.toString(p1.getX()));
+        jLabel2.setText(Double.toString(p1.getY()));
+
+        jLabel3.setText(Double.toString(Math.asin(p1.getY()) / Math.PI * 180));
+//        
+
+        if (p1.getX() > 0) {
+
+            drawByAngle(p, Math.asin(p1.getY()), true);
+        } else {
+
+            drawByAngle(p, Math.PI - Math.asin(p1.getY()), true);
+        }
+    }//GEN-LAST:event_jPanelXzMouseReleasedDisco
+
     private javax.swing.filechooser.FileFilter getFileFilter(){
         javax.swing.filechooser.FileNameExtensionFilter ff = new FileNameExtensionFilter("Archivos STL, WaveFront", "stl","obj");
         return ff;
     }
+    
     private javax.swing.JPanel advancedPanel() {
         return new javax.swing.JPanel() {
             @Override
