@@ -232,8 +232,7 @@ public class PrimerFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jButton1)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jButton2))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel4)
@@ -254,8 +253,8 @@ public class PrimerFrame extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jRadioButton5)
                             .addComponent(jRadioButton4)
-                            .addComponent(jRadioButton6))
-                        .addContainerGap(86, Short.MAX_VALUE))))
+                            .addComponent(jRadioButton6))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -343,6 +342,11 @@ public class PrimerFrame extends javax.swing.JFrame {
         jPanelCamera.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 jPanelCameraMouseDragged(evt);
+            }
+        });
+        jPanelCamera.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jPanelCameraMouseReleased(evt);
             }
         });
 
@@ -1074,6 +1078,18 @@ public class PrimerFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jPanelXzMouseReleasedDisco
 
+    private void jPanelCameraMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelCameraMouseReleased
+
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - DRAWOFFSET, DRAWOFFSET - evt.getX(), 0L);
+
+        Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
+        p = (DoubleVector3DImpl) p.escalar(1 / distancia);
+        camaraAtril.setAngulo(distancia / GIZMORADIUS * Math.PI);
+        camaraAtril.setEje(p);
+        
+        drawByAngle(this.cachedEje, this.cachedAngle, true);
+    }//GEN-LAST:event_jPanelCameraMouseReleased
+
     private javax.swing.filechooser.FileFilter getFileFilter(){
         javax.swing.filechooser.FileNameExtensionFilter ff = new FileNameExtensionFilter("Archivos STL, WaveFront", "stl","obj");
         return ff;
@@ -1085,10 +1101,16 @@ public class PrimerFrame extends javax.swing.JFrame {
             public void paint(Graphics g) {
                 super.paint(g);
                 if (camara1PolygonList != null) {
+                    Polygon basePol = new Polygon();
+                    basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET + GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET + GIZMORADIUS) , (int)(DRAWOFFSET + GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET + GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
 
                     g.setColor(Color.BLUE);
                     g.setPaintMode();
-                    g.drawRect(10, 10, 100, 100);
+                    g.drawPolygon(basePol);
                     camara1PolygonList.forEach(polygon -> {
                         g.setColor(polygon.color);
                         g.fillPolygon(polygon);
@@ -1106,10 +1128,16 @@ public class PrimerFrame extends javax.swing.JFrame {
             public void paint(Graphics g) {
                 super.paint(g);
                 if (camara1PolygonList != null) {
+                    Polygon basePol = new Polygon();
+                    basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET + GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET + GIZMORADIUS) , (int)(DRAWOFFSET + GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET + GIZMORADIUS));
+                    basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
 
                     g.setColor(Color.BLUE);
                     g.setPaintMode();
-                    g.drawRect(10, 10, 100, 100);
+                    g.drawPolygon(basePol);
                     camara1PolygonList.forEach(polygon -> {
                         g.setColor(polygon.color);
                         g.drawPolygon(polygon);
