@@ -7,6 +7,9 @@ package org.tensa.visualizador;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +55,9 @@ public class PrimerFrame extends javax.swing.JFrame {
     private final List<SpacePolygon> flatCamara3PolygonList = new ArrayList<>();
     private final ArrayList<Atril> modelos = new ArrayList<>();
     
+    private final static Double GIZMORADIUS = 50.0;
+    private final static Double CAMERAPOSITION = 70.0;
+    private final static Double DRAWOFFSET = 90.0;
 
     /**
      * Get the value of isRodillo
@@ -439,7 +445,7 @@ public class PrimerFrame extends javax.swing.JFrame {
 
     private void initModels(){
 
-        gizmo = new EsferaGeodecica(2, 50);
+        gizmo = new EsferaGeodecica(2, GIZMORADIUS.intValue());
         esferaAtril = new Atril();
         esferaAtril.setNube(gizmo);
         esferaAtril.setLugar(new DoubleVector3DImpl(0, 0, 0));
@@ -448,7 +454,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         camara = new Camara((double) 5000);
         camaraAtril = new Atril();
         camaraAtril.setNube(camara);
-        camaraAtril.setLugar(new DoubleVector3DImpl(0, 0, -70));
+        camaraAtril.setLugar(new DoubleVector3DImpl(0, 0, -CAMERAPOSITION));
         camaraAtril.setEje(new DoubleVector3DImpl(1, 0, 0));
         camaraAtril.setAngulo(Math.toRadians(0));
         camaraAtril.setTalla(new DoubleVector3DImpl(1, 1, 1));
@@ -504,10 +510,16 @@ public class PrimerFrame extends javax.swing.JFrame {
 
     private void drawByAngle(DoubleVector3DImpl eje, double angle, boolean isFull) {
 
+        Polygon basePol = new Polygon();
+        basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
+        basePol.addPoint( (int)(DRAWOFFSET + GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
+        basePol.addPoint( (int)(DRAWOFFSET + GIZMORADIUS) , (int)(DRAWOFFSET + GIZMORADIUS));
+        basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET + GIZMORADIUS));
+        basePol.addPoint( (int)(DRAWOFFSET - GIZMORADIUS) , (int)(DRAWOFFSET - GIZMORADIUS));
         Stream.of(jPanelXy, jPanelXz, jPanelYz )
                 .forEach(p -> {
                     p.getGraphics().clearRect(5, 5, p.getWidth() - 10, p.getHeight() - 10);
-                    p.getGraphics().drawRect(10, 10, 100, 100);
+                    p.getGraphics().drawPolygon(basePol);
                     p.getGraphics().setColor(Color.BLACK);
                     p.getGraphics().setPaintMode();
                 });
@@ -517,7 +529,7 @@ public class PrimerFrame extends javax.swing.JFrame {
 
         Double3DVector[] gizmoPoints;
 
-        DoubleVector3DImpl offset = new DoubleVector3DImpl(60, 60, 60);
+        DoubleVector3DImpl offset = new DoubleVector3DImpl(DRAWOFFSET, DRAWOFFSET, DRAWOFFSET);
 
         DoubleMatriz cr = camaraAtril.getEje().toMatriz().matrizRotacion(camaraAtril.getAngulo());
 
@@ -564,13 +576,6 @@ public class PrimerFrame extends javax.swing.JFrame {
                 .map(DoubleMatriz::toVector)
                 .map(offset::add)
                 .toArray(Double3DVector[]::new);
-
-//        jPanelXy.getGraphics().setColor(Color.RED);
-//        jPanelXz.getGraphics().setColor(Color.RED);
-//        jPanelYz.getGraphics().setColor(Color.RED);
-//        jPanelXy.getGraphics().setPaintMode();
-//        jPanelXz.getGraphics().setPaintMode();
-//        jPanelYz.getGraphics().setPaintMode();
         
         camara.getLineIndexList().forEach( indice -> {
             Double3DVector iniPoint = camaraPoints[indice.getFila()-1];
@@ -716,7 +721,7 @@ public class PrimerFrame extends javax.swing.JFrame {
 
     private NumericMatriz<Double> alejamiento(NumericMatriz<Double> m, double dist) {
 
-        return m.productoEscalar(60 / dist);
+        return m.productoEscalar(DRAWOFFSET / dist);
     }
 
     private void jPanelXyMouseDraggedRodillo(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXyMouseDraggedRodillo
@@ -724,7 +729,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
 
         Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
         p = (DoubleVector3DImpl) p.escalar(1 / distancia);
@@ -732,7 +737,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getY()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI, false);
+        drawByAngle(p, distancia / GIZMORADIUS * Math.PI, false);
 
 
     }//GEN-LAST:event_jPanelXyMouseDraggedRodillo
@@ -743,7 +748,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p = new DoubleVector3DImpl(0L, evt.getX() - 60, evt.getY() - 60);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(0L, evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET);
 
         Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
         p = (DoubleVector3DImpl) p.escalar(1 / distancia);
@@ -751,7 +756,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getY()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI, false);
+        drawByAngle(p, distancia / GIZMORADIUS * Math.PI, false);
     }//GEN-LAST:event_jPanelYzMouseDraggedRodillo
 
     private void jPanelXzMouseDraggedRodillo(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXzMouseDraggedRodillo
@@ -760,7 +765,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - 60, 0L, evt.getX() - 60);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - DRAWOFFSET, 0L, evt.getX() - DRAWOFFSET);
 
         Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
         p = (DoubleVector3DImpl) p.escalar(1 / distancia);
@@ -768,16 +773,16 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getZ()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI, false);
+        drawByAngle(p, distancia / GIZMORADIUS * Math.PI, false);
     }//GEN-LAST:event_jPanelXzMouseDraggedRodillo
 
     private void jPanelCameraMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelCameraMouseDragged
 
-        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - 60, 60 - evt.getX(), 0L);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - DRAWOFFSET, DRAWOFFSET - evt.getX(), 0L);
 
         Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
         p = (DoubleVector3DImpl) p.escalar(1 / distancia);
-        camaraAtril.setAngulo(distancia / 50 * Math.PI);
+        camaraAtril.setAngulo(distancia / GIZMORADIUS * Math.PI);
         camaraAtril.setEje(p);
         
         drawByAngle(this.cachedEje, this.cachedAngle, false);
@@ -799,7 +804,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
         DoubleVector3DImpl p = new DoubleVector3DImpl(0, 0, 1);
 
         Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
@@ -826,7 +831,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
         DoubleVector3DImpl p = new DoubleVector3DImpl(1, 0, 0);
 
         Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
@@ -853,7 +858,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
         DoubleVector3DImpl p = new DoubleVector3DImpl(0, 1, 0);
 
         Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
@@ -943,7 +948,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p = new DoubleVector3DImpl(0L, evt.getX() - 60, evt.getY() - 60);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(0L, evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET);
 
         Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
         p = (DoubleVector3DImpl) p.escalar(1 / distancia);
@@ -951,7 +956,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getY()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI, true);
+        drawByAngle(p, distancia / GIZMORADIUS * Math.PI, true);
     }//GEN-LAST:event_jPanelYzMouseReleasedRodillo
 
     private void jPanelXyMouseReleasedRodillo(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXyMouseReleasedRodillo
@@ -959,7 +964,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
 
         Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
         p = (DoubleVector3DImpl) p.escalar(1 / distancia);
@@ -967,7 +972,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getY()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI, true);
+        drawByAngle(p, distancia / GIZMORADIUS * Math.PI, true);
 
     }//GEN-LAST:event_jPanelXyMouseReleasedRodillo
 
@@ -977,7 +982,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - 60, 0L, evt.getX() - 60);
+        DoubleVector3DImpl p = new DoubleVector3DImpl(evt.getY() - DRAWOFFSET, 0L, evt.getX() - DRAWOFFSET);
 
         Double distancia = Math.sqrt(p.toMatriz().distanciaE2().get(Indice.E1));
         p = (DoubleVector3DImpl) p.escalar(1 / distancia);
@@ -985,7 +990,7 @@ public class PrimerFrame extends javax.swing.JFrame {
         jLabel2.setText(Double.toString(p.getZ()));
         jLabel3.setText(distancia.toString());
         
-        drawByAngle(p, distancia / 50 * Math.PI, true);
+        drawByAngle(p, distancia / GIZMORADIUS * Math.PI, true);
     }//GEN-LAST:event_jPanelXzMouseReleasedRodillo
 
     private void jPanelXyMouseReleasedDisco(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelXyMouseReleasedDisco
@@ -994,7 +999,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
         DoubleVector3DImpl p = new DoubleVector3DImpl(0, 0, 1);
 
         Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
@@ -1021,7 +1026,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
         DoubleVector3DImpl p = new DoubleVector3DImpl(1, 0, 0);
 
         Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
@@ -1048,7 +1053,7 @@ public class PrimerFrame extends javax.swing.JFrame {
             return;
         }
 
-        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - 60, evt.getY() - 60, 0L);
+        DoubleVector3DImpl p1 = new DoubleVector3DImpl(evt.getX() - DRAWOFFSET, evt.getY() - DRAWOFFSET, 0L);
         DoubleVector3DImpl p = new DoubleVector3DImpl(0, 1, 0);
 
         Double distancia = Math.sqrt(p1.toMatriz().distanciaE2().get(Indice.E1));
