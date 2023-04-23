@@ -922,9 +922,9 @@ public class PrimerFrame extends javax.swing.JFrame {
                 Atril loadedSupport = new Atril();
                 loadedSupport.setNube(loadedObject);
                 loadedSupport.setEje( new DoubleVector3DImpl(1, 0, 0));
-                loadedSupport.setAngulo(Math.toRadians(0));
+                loadedSupport.setAngulo(Math.toRadians(180));
                 loadedSupport.setLugar(new DoubleVector3DImpl(0, 0, 0));
-                loadedSupport.setTalla(new DoubleVector3DImpl(16, 16, 16));
+                loadedSupport.setTalla(new DoubleVector3DImpl(2048, 2048, 2048));
                 modelos.add(loadedSupport);
             } catch (IOException ex) {
                 Logger.getLogger(PrimerFrame.class.getName()).log(Level.SEVERE, null, ex);
